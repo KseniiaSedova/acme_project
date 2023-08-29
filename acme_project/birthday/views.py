@@ -1,17 +1,39 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 
 from .models import Birthday
 from .forms import BirthdayForm
 from .utils import calculate_birthday_countdown
 
 
-def birthday_list(request):
-    template_name = 'birthday/birthday_list.html'
-    birthdays = Birthday.objects.all()
-    context = {'birthdays': birthdays}
-    return render(request, template_name, context)
+class BirthdayMixin:
+    model = Birthday
+    form_class = BirthdayForm
+    template_name = 'birthday/birthday.html'
+    success_url = reverse_lazy('birthday:list')
 
 
+class BirthdayListView(ListView):
+    model = Birthday
+    ordering = 'id'
+    paginate_by = 10
+
+
+class BirthdayDeleteView(DeleteView):
+    model = Birthday
+    success_url = reverse_lazy('birthday:list')
+    
+    
+class BirthdayCreateView(BirthdayMixin, CreateView):
+    pass
+    
+
+class BirthdayUpdateView(BirthdayMixin, UpdateView):
+    pass
+
+       
 def birthday(request, pk=None):
     if pk is not None:
         instance = get_object_or_404(Birthday, pk=pk)
@@ -39,5 +61,3 @@ def delete_birthday(request, pk=None):
         instance.delete()
         return redirect('birthday:list')
     return render(request, 'birthday/birthday.html', context)
-        
-    

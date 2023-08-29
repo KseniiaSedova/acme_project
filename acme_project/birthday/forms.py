@@ -11,7 +11,7 @@ class BirthdayForm(forms.ModelForm):
     class Meta:
         model = Birthday
         fields = '__all__'
-        widget = {'birthday': forms.DateInput(attrs={'type': 'date'})}
+        widgets = {'birthday': forms.DateInput(attrs={'type': 'date'})}
 
     def clean_first_name(self):
         first_name = self.cleaned_data['first_name']
