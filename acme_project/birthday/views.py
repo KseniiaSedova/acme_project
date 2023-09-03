@@ -1,9 +1,9 @@
-from django.forms.models import BaseModelForm
-from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView
 )
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 
 from .forms import BirthdayForm
@@ -29,12 +29,23 @@ class BirthdayCreateView(LoginRequiredMixin, CreateView):
 class BirthdayUpdateView(LoginRequiredMixin, UpdateView):
     model = Birthday
     form_class = BirthdayForm
+    
+    def dispatch(self, request, *args, **kwargs):        
+        instance = get_object_or_404(Birthday, pk=kwargs['pk'])
+        if instance.author != request.user:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
 
 class BirthdayDeleteView(LoginRequiredMixin, DeleteView):
     model = Birthday
     success_url = reverse_lazy('birthday:list')
-
+    
+    def dispatch(self, request, *args, **kwargs):        
+        instance = get_object_or_404(Birthday, pk=kwargs['pk'])
+        if instance.author != request.user:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
 class BirthdayDetailView(LoginRequiredMixin, DetailView):
     model = Birthday
