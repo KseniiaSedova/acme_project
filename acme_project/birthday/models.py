@@ -7,6 +7,7 @@ from .validators import real_age
 
 User = get_user_model()
 
+
 class Birthday(models.Model):
     first_name = models.CharField(verbose_name='Имя', max_length=20)
     last_name = models.CharField(verbose_name='Фамилия',
@@ -33,7 +34,21 @@ class Birthday(models.Model):
     
     def get_absolute_url(self):
         return reverse('birthday:detail', kwargs={'pk': self.pk}) 
-              
-           
+                    
     def __str__(self) -> str:
         return self.first_name
+    
+    
+class Congratulation(models.Model):
+    text = models.TextField(verbose_name='Текст поздравления')
+    birthday = models.ForeignKey(
+        Birthday,
+        on_delete=models.CASCADE,
+        related_name='congratulations',  
+    )
+    created_date = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    class Meta:
+        ordering = ('created_date',)
+    
