@@ -1,3 +1,5 @@
+from django.forms.models import BaseModelForm
+from django.http import HttpResponse
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView
 )
@@ -9,7 +11,7 @@ from .models import Birthday
 from .utils import calculate_birthday_countdown
 
 
-class BirthdayListView(ListView):
+class BirthdayListView(LoginRequiredMixin, ListView):
     model = Birthday
     ordering = 'id'
     paginate_by = 10
@@ -18,6 +20,10 @@ class BirthdayListView(ListView):
 class BirthdayCreateView(LoginRequiredMixin, CreateView):
     model = Birthday
     form_class = BirthdayForm
+    
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
 
 class BirthdayUpdateView(LoginRequiredMixin, UpdateView):
