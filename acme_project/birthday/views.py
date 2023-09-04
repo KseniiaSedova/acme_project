@@ -18,6 +18,7 @@ class BirthdayListView(LoginRequiredMixin, ListView):
 
 
 class BirthdayCreateView(LoginRequiredMixin, CreateView):
+    '''Представление для списка birthday'''
     model = Birthday
     form_class = BirthdayForm
     
@@ -27,6 +28,7 @@ class BirthdayCreateView(LoginRequiredMixin, CreateView):
 
 
 class BirthdayUpdateView(LoginRequiredMixin, UpdateView):
+    '''Класс представления для изменения записи'''
     model = Birthday
     form_class = BirthdayForm
     
@@ -38,6 +40,7 @@ class BirthdayUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class BirthdayDeleteView(LoginRequiredMixin, DeleteView):
+    '''Класс представления для удаления записи'''
     model = Birthday
     success_url = reverse_lazy('birthday:list')
     
@@ -55,6 +58,14 @@ class BirthdayDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['birthday_countdown'] = calculate_birthday_countdown(
             self.object.birthday
+        )
+        # Записываем в переменную form пустой объект формы.
+        context['form'] = CongratulationForm()
+        # Запрашиваем все поздравления для выбранного дня рождения.
+        context['congratulations'] = (
+            # Дополнительно подгружаем авторов комментариев,
+            # чтобы избежать множества запросов к БД.
+            self.object.congratulations.select_related('author')
         )
         return context 
 
