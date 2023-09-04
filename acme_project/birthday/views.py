@@ -13,6 +13,8 @@ from .utils import calculate_birthday_countdown
 
 class BirthdayListView(LoginRequiredMixin, ListView):
     model = Birthday
+    queryset = Birthday.objects.prefetch_related(
+        'tags').select_related('author')
     ordering = 'id'
     paginate_by = 10
 
@@ -32,7 +34,8 @@ class BirthdayUpdateView(LoginRequiredMixin, UpdateView):
     model = Birthday
     form_class = BirthdayForm
     
-    def dispatch(self, request, *args, **kwargs):        
+    def dispatch(self, request, *args, **kwargs):
+        '''Метод для передачи данных в контекст'''        
         instance = get_object_or_404(Birthday, pk=kwargs['pk'])
         if instance.author != request.user:
             raise PermissionDenied
