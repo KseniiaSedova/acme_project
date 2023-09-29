@@ -12,6 +12,7 @@ from .utils import calculate_birthday_countdown
 
 
 class BirthdayListView(LoginRequiredMixin, ListView):
+    """CBV отображения главной страницы с днями рождения."""
     model = Birthday
     queryset = Birthday.objects.prefetch_related(
         'tags').select_related('author')
