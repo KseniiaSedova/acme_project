@@ -56,6 +56,7 @@ class BirthdayDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class BirthdayDetailView(LoginRequiredMixin, DetailView):
+    '''Класс представления для отдельной записи'''
     model = Birthday
 
     def get_context_data(self, **kwargs):
@@ -75,6 +76,7 @@ class BirthdayDetailView(LoginRequiredMixin, DetailView):
 
 
 class CongratulationCreateView(LoginRequiredMixin, CreateView):
+    '''Класс представления для создания поздравления'''
     birthday = None
     model = Congratulation
     form_class = CongratulationForm
